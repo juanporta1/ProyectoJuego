@@ -11,18 +11,10 @@ class Character():
         self.update_time = pygame.time.get_ticks()
         self.shape = pygame.Rect(0, 0 , consts.CHARACTER_WIDTH, consts.CHARACTER_HEIGHT)
         self.shape.center = (x, y)
+        self.velocity = consts.CHARACTER_VELOCITY
+ 
+
         
-        
-    def move(self, delta_x, delta_y):
-        if delta_x > 0: 
-            self.flip = False
-            
-        elif delta_x < 0:
-            self.flip = True
-        
-        self.shape.x += delta_x
-        self.shape.y += delta_y
-    
     def update_animation(self):
         cooldown_animation = 150
         self.image = self.animaton_srpites[self.frame_index]
@@ -34,7 +26,10 @@ class Character():
                 self.frame_index += 1 
             self.update_time = pygame.time.get_ticks()
         
-    def draw(self, window):
+    def draw(self, window,color):
         self.image_flip = pygame.transform.flip(self.image, flip_x=self.flip, flip_y=False)
         window.blit(self.image_flip, self.shape)
-        pygame.draw.rect(window, (255,255,0), self.shape)
+        pygame.draw.rect(window, color, self.shape,width=1)
+        
+    
+        

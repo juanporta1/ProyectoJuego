@@ -1,6 +1,8 @@
 import pygame
 import consts
 from character import Character
+import assets
+import copy
 
 pygame.init()
 window = pygame.display.set_mode((consts.WINDOW_WIDTH, consts.WINDOW_HEIGHT))
@@ -26,61 +28,56 @@ player_image = scale_image(player_image,consts.CHARACTER_SCALE)
 clock = pygame.time.Clock()
 #Definicion de variables
 
-player = Character(x = 100,
-                   y = 100,
+player = Character(x = 20,
+                   y = 380,
                    animation_sprites=character_walk_sprites)
+
+enemy = Character(x = 300,
+                    y = 100,
+                    animation_sprites=character_walk_sprites)
+
 run = True
 move_left = False
 move_right = False
 move_up = False
 move_down = False    
 
+def move(player):
+    keys = pygame.key.get_pressed()
+    
+    if keys[pygame.K_a] and player.shape.x - 1 > 0:
+            player.shape.x -= consts.CHARACTER_VELOCITY
+    
+    if keys[pygame.K_d] and player.shape.x + 1 < window.get_size()[0] - player.shape.width:
+            player.shape.x += consts.CHARACTER_VELOCITY
+        
+    if keys[pygame.K_w] and player.shape.y - 1 > 0:
+        player.shape.y -= consts.CHARACTER_VELOCITY 
+        
+    if keys[pygame.K_s] and player.shape.y + 1 < window.get_size()[1] - player.shape.height - 200:
+        player.shape.y += consts.CHARACTER_VELOCITY 
+        
+enemy = Character(x = 300,
+                  y= 100,
+                  animation_sprites=character_walk_sprites)
+
+piso = pygame.Rect(0,400, 800,200)
+
 while run:
-    window.fill(consts.WINDOW_COLORBG)
+    window.blit(assets.parallax_bg, (0,0))
     
     clock.tick(consts.FPS)
-
-    delta_x = 0
-    delta_y = 0
     
-    #COntrolar movimiento del jugador
-    if move_left == True:
-        delta_x = -consts.CHARACTER_VELOCITY
-    elif move_right == True:
-        delta_x = consts.CHARACTER_VELOCITY
-    
-    if move_up == True:
-        delta_y = -consts.CHARACTER_VELOCITY
-    elif move_down == True:
-        delta_y = consts.CHARACTER_VELOCITY
-    
-    player.draw(window)
-    player.move(delta_x, delta_y)
+    player.draw(window,(255,255,0))
     player.update_animation()
-   
+    enemy.draw(window,(0,0,0))
+    enemy.update_animation()
+    pygame.draw.rect(surface=window,color=(0,0,0),rect=piso)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False 
             
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_a:
-                move_left = True
-            if event.key == pygame.K_d:
-                move_right = True
-            if event.key == pygame.K_w:
-                move_up = True
-            if event.key == pygame.K_s:
-                move_down = True
-        
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_a:
-                move_left = False
-            if event.key == pygame.K_d:
-                move_right = False
-            if event.key == pygame.K_w:
-                move_up = False
-            if event.key == pygame.K_s:
-                move_down = False
+    move(player)    
             
     pygame.display.update()
 pygame.quit()
