@@ -53,6 +53,14 @@ def detect_floor(floors,player):
                 stay_floor = True
     return (stay_floor,is_floor_one)
 
+def detect_stairs(stairs,player):
+    for i in stairs:    
+        if player.shape.left >= i.left - 10 and player.shape.right <= i.right + 10:
+            stay_stair = True
+            break
+        else:
+            stay_stair = False
+    return stay_stair
 
 floor1 = pygame.Rect(0,400, 800,200)
 floor2 = pygame.Rect(0,300, 800,30) 
@@ -74,13 +82,8 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False 
-    for i in stairs:    
-        if player.shape.colliderect(i):
-            stay_stair = True
-            break
-        else:
-            stay_stair = False
-            
+    
+    stay_stair = detect_stairs(stairs,player)       
     stay_floor,is_floor_one = detect_floor(floors,player)        
     
                                       
