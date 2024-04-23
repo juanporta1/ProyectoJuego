@@ -25,6 +25,27 @@ class Character():
             else:    
                 self.frame_index += 1 
             self.update_time = pygame.time.get_ticks()
+    
+    def move(self,window,stair,floor, is_floor_one):
+        keys = pygame.key.get_pressed()
+        
+        if keys[pygame.K_a] and self.shape.x - 5 > 0:
+                self.shape.x -= consts.CHARACTER_VELOCITY
+                self.flip = True
+        
+        if keys[pygame.K_d] and self.shape.x + 5 < window.get_size()[0] - self.shape.width:
+                self.shape.x += consts.CHARACTER_VELOCITY
+                self.flip = False
+            
+        if keys[pygame.K_w] and self.shape.y - 5 > 0 and stair:
+            self.shape.y -= consts.CHARACTER_VELOCITY 
+            
+        if keys[pygame.K_s] and stair and not is_floor_one:
+            self.shape.y += consts.CHARACTER_VELOCITY
+        
+        if not stair and not floor:
+            self.shape.y += consts.CHARACTER_VELOCITY
+            
         
     def draw(self, window,color):
         self.image_flip = pygame.transform.flip(self.image, flip_x=self.flip, flip_y=False)

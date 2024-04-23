@@ -32,52 +32,59 @@ player = Character(x = 20,
                    y = 380,
                    animation_sprites=character_walk_sprites)
 
-enemy = Character(x = 300,
-                    y = 100,
-                    animation_sprites=character_walk_sprites)
-
 run = True
 move_left = False
 move_right = False
 move_up = False
 move_down = False    
 
-def move(player):
-    keys = pygame.key.get_pressed()
-    
-    if keys[pygame.K_a] and player.shape.x - 1 > 0:
-            player.shape.x -= consts.CHARACTER_VELOCITY
-    
-    if keys[pygame.K_d] and player.shape.x + 1 < window.get_size()[0] - player.shape.width:
-            player.shape.x += consts.CHARACTER_VELOCITY
-        
-    if keys[pygame.K_w] and player.shape.y - 1 > 0:
-        player.shape.y -= consts.CHARACTER_VELOCITY 
-        
-    if keys[pygame.K_s] and player.shape.y + 1 < window.get_size()[1] - player.shape.height - 200:
-        player.shape.y += consts.CHARACTER_VELOCITY 
-        
-enemy = Character(x = 300,
-                  y= 100,
-                  animation_sprites=character_walk_sprites)
+stair = pygame.Rect(300,0,50,400)
+stairs = [stair]
 
-piso = pygame.Rect(0,400, 800,200)
+def detect_floor(floors,player):
+    stay_floor = False
+    is_floor_one = False
+    if floors[0].top == player.shape.bottom:
+        is_floor_one = True
+        stay_floor = True
+    else:
+        for i in range(1,len(floors)):
+            if floors[i].top == player.shape.bottom:
+                stay_floor = True
+    return (stay_floor,is_floor_one)
 
+
+floor1 = pygame.Rect(0,400, 800,200)
+floor2 = pygame.Rect(0,300, 800,30) 
+floor3 = pygame.Rect(0,150, 800,30) 
+floors = [floor1,floor2,floor3]
 while run:
     window.blit(assets.parallax_bg, (0,0))
     
     clock.tick(consts.FPS)
     
+    
+    pygame.draw.rect(surface=window,color=(0,0,0),rect=floor1)
+    pygame.draw.rect(surface=window,color=(0,0,0),rect=floor2)
+    pygame.draw.rect(surface=window,color=(0,0,0),rect=floor3)
+    pygame.draw.rect(rect=stair,color=(255,255,255),surface=window)
+    
     player.draw(window,(255,255,0))
     player.update_animation()
-    enemy.draw(window,(0,0,0))
-    enemy.update_animation()
-    pygame.draw.rect(surface=window,color=(0,0,0),rect=piso)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False 
+    for i in stairs:    
+        if player.shape.colliderect(i):
+            stay_stair = True
+            break
+        else:
+            stay_stair = False
             
-    move(player)    
+    stay_floor,is_floor_one = detect_floor(floors,player)        
+    
+                                      
+    player.move(window,stay_stair,stay_floor,is_floor_one)    
             
     pygame.display.update()
 pygame.quit()
